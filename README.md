@@ -10,7 +10,9 @@ Start by calling ets_cache_sup:start_link() or application:start(ets_cache).
 Functions are as follows:
 
 cache_server:set(Key, Value, TTLInSeconds) -> ok
+
 cache_server:get(Key) -> Value or <<>>
+
 cache_server:delete(Key) -> ok
 
 By default,
