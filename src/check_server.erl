@@ -5,7 +5,7 @@
 
 %% API
 -export([
-         start_link/0,
+         start_link/0, start_link/1,
 	 stop/0
          ]).
 
@@ -22,6 +22,9 @@
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
 
+start_link(Opts) ->
+    gen_server:start_link({local, ?SERVER}, ?MODULE, [Opts], []).
+
 stop() ->
     gen_server:cast(?SERVER, stop).
 
@@ -32,7 +35,10 @@ stop() ->
 
 init([]) ->
     io:fwrite("check_server init!~n", []),
-    {ok, ok, 0}.
+    {ok, ok, 0};
+init([Opts]) ->
+    io:fwrite("check_server ~p\n", [Opts]),
+        {ok, ok, 0}.
 
 handle_call(_Msg, _From, State) ->
     {reply, {ok, ok}, State}.
