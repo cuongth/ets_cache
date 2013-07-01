@@ -42,7 +42,7 @@ delete(Key) ->
 init(Opts) ->
     MaxSize = proplists:get_value(maxsize, Opts, 32 * 1024 * 1024),
     Threshold = proplists:get_value(threshold, Opts, 0.85),
-    ValueEts = ets:new(bronzeboyvn_cache_server, [named_table, public]),
+    ValueEts = ets:new(bronzeboyvn_cache_server, []),
     {ok, #cachestate{maxsize = MaxSize,
         threshold = Threshold,
         cacheets = ValueEts}}.
