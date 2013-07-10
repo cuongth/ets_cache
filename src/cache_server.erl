@@ -57,7 +57,7 @@ handle_call({get, Key}, _From, #cachestate{cacheets = ValueEts} = State) ->
                     {_, Value} = H,
                     Value
             end;
-	exprired ->
+	expired ->
             ets:delete(ValueEts, Key),
             <<>>;
         _ ->
