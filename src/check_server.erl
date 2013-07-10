@@ -47,7 +47,7 @@ sync_sort_key() ->
 %%%===================================================================
 
 init(Opts) ->
-    Weight = proplists:get_value(weight, Opts, 30),
+    Weight = proplists:get_value(ets_weight, Opts, 30),
     CheckEts = ets:new(bronzeboyvn_check_server, [private]),
     {ok, #checkstate{
       weight = Weight, checkets = CheckEts}

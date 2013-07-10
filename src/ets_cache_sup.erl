@@ -18,11 +18,11 @@ start_link(Opts) ->
     supervisor:start_link({local, ?SERVER}, ?MODULE, Opts).
 
 init(Opts) ->
-    MaxSize = proplists:get_value(maxsize, Opts, 32 * 1024 * 1024),
-    Threshold = proplists:get_value(threshold, Opts, 0.85),
-    Weight = proplists:get_value(weight, Opts, 30),
-    ValOpts = [{maxsize, MaxSize}, {threshold, Threshold}],
-    ChkOpt = [{weight, Weight}],
+    MaxSize = proplists:get_value(ets_maxsize, Opts, 32 * 1024 * 1024),
+    Threshold = proplists:get_value(ets_threshold, Opts, 0.85),
+    Weight = proplists:get_value(ets_weight, Opts, 30),
+    ValOpts = [{ets_maxsize, MaxSize}, {ets_threshold, Threshold}],
+    ChkOpt = [{ets_weight, Weight}],
     ValServ = {cache_server, {cache_server, start_link, [ValOpts]},
               permanent, 2000, worker, [cache_server]},
     ChkServ = {check_server, {check_server, start_link, [ChkOpt]},

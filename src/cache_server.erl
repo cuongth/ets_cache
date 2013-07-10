@@ -40,8 +40,8 @@ delete(Key) ->
 %%%===================================================================
 
 init(Opts) ->
-    MaxSize = proplists:get_value(maxsize, Opts, 32 * 1024 * 1024),
-    Threshold = proplists:get_value(threshold, Opts, 0.85),
+    MaxSize = proplists:get_value(ets_maxsize, Opts, 32 * 1024 * 1024),
+    Threshold = proplists:get_value(ets_threshold, Opts, 0.85),
     ValueEts = ets:new(bronzeboyvn_cache_server, [private]),
     {ok, #cachestate{maxsize = MaxSize,
         threshold = Threshold,
