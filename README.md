@@ -6,14 +6,17 @@ ETS cache with time to live (TTL)
 To use:
 Compile project by make.
 
-Start by calling ets_cache_sup:start_link() or application:start(ets_cache).
-Functions are as follows:
+Start by calling one of following function:
 
-cache_server:set(Key, Value, TTLInSeconds) -> ok
+	ets_cache_sup:start_link().
+	application:start(ets_cache).
+	ets_cache_sup:start_link(Options).
 
-cache_server:get(Key) -> Value or <<>>
+Functions set, get, delete:
 
-cache_server:delete(Key) -> ok
+	cache_server:set(Key, Value, TTLInSeconds) -> ok
+	cache_server:get(Key) -> Value or <<>>
+	cache_server:delete(Key) -> ok
 
 By default,
 Options = [[{maxsize, 32*1024*1024}, {threshold, 0.85}, {weight, 30}].
