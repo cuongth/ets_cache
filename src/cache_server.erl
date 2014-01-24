@@ -40,7 +40,7 @@ delete(NameOrPid, Key) ->
 %%%===================================================================
 
 init(Opts) ->
-    MaxSize = proplists:get_value(ets_maxsize, Opts, 16 * 1024 * 1024),
+    MaxSize = proplists:get_value(ets_maxsize, Opts, 8 * 1024 * 1024),
     Threshold = proplists:get_value(ets_threshold, Opts, 0.85),
     CheckPid = proplists:get_value(checkpid, Opts),
     ValueEts = ets:new(bronzeboyvn_cache_server, [private]),
@@ -61,7 +61,7 @@ handle_call({get, Key}, _From, #cachestate{
                     {_, Value} = H,
                     Value
             end;
-	expired ->
+        expired ->
             ets:delete(ValueEts, Key),
             <<>>;
         _ ->
