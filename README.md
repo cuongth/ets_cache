@@ -19,7 +19,7 @@ Functions set, get, delete:
 	cache_server:delete(Key) -> ok
 
 By default,
-Options = [[{maxsize, 32*1024*1024}, {threshold, 0.85}, {weight, 30}].
+Options = [{ets_maxsize, 16*1024*1024}, {ets_threshold, 0.85}, {ets_weight, 30}].
 
 This means all {Key, Value} elements are kept in cache until table size exceeds maxsize.
 When it happends, we delete exprired elements. After shrinking, if table size still exceeds maxsize*threshold, we sort element by weight (element has more accesses, it's heavier). We repeat to delete the lightest while table size still exceeds maxsize*threshold.
