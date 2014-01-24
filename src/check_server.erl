@@ -27,7 +27,7 @@ start_link(Arg) ->
 %%%===================================================================
 
 init(Opts) ->
-    Weight = proplists:get_value(ets_weight, Opts, 1),
+    Weight = proplists:get_value(ets_weight, Opts, 30),
     CheckEts = ets:new(bronzeboyvn_check_server, [private]),
     {ok, #checkstate{
       weight = Weight, checkets = CheckEts}
