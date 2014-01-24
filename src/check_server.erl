@@ -4,9 +4,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, start_link/1, stop/0,
-    sync_lookup/1, sync_set/2, async_delete/1,
-    sync_shrink/1, sync_sort_key/0]).
+-export([start_link/0, start_link/1]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2,
@@ -24,30 +22,12 @@ start_link() ->
 start_link(Arg) ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, Arg, []).
 
-stop() ->
-    gen_server:cast(?MODULE, stop).
-
-sync_lookup(Key) ->
-    gen_server:call(?MODULE, {lookup, Key}).
-
-sync_set(Key, TTL) ->
-    gen_server:call(?MODULE, {set, Key, TTL}).
-
-async_delete(Key) ->
-    gen_server:cast(?MODULE, {delete, Key}).
-
-sync_shrink(CurrentTime) ->
-    gen_server:call(?MODULE, {shrink, CurrentTime}).
-
-sync_sort_key() ->
-    gen_server:call(?MODULE, sortkey).
-
 %%%===================================================================
 %%% gen_server callbacks
 %%%===================================================================
 
 init(Opts) ->
-    Weight = proplists:get_value(ets_weight, Opts, 30),
+    Weight = proplists:get_value(ets_weight, Opts, 1),
     CheckEts = ets:new(bronzeboyvn_check_server, [private]),
     {ok, #checkstate{
       weight = Weight, checkets = CheckEts}
@@ -55,6 +35,7 @@ init(Opts) ->
 
 handle_call({lookup, Key}, _From, #checkstate{
         checkets = CheckEts} = State) ->
+    io:fwrite("[LOOKUP] check ~p", [self()]),
     Reply = case ets:lookup(CheckEts, Key) of
         [] ->
             notfound;
@@ -72,6 +53,7 @@ handle_call({lookup, Key}, _From, #checkstate{
                     ok
             end
     end,
+    io:fwrite(", reply ~p", [Reply]),
     {reply, Reply, State};
 handle_call({set, Key, TTL}, _From, #checkstate{
         checkets = CheckEts} = State) ->
@@ -98,11 +80,11 @@ handle_call(sortkey, _From, #checkstate{
     {reply, SortedKeys, State};
 handle_call({shrink, CurrentTime}, _From, #checkstate{
         checkets = CheckEts} = State) ->
-    Expire = ets:fun2ms(
-        fun({Key,{_, Start, TTL}}) when Start + TTL =< CurrentTime ->
-            Key
-    end),
-    ExpiredKeys = ets:select(CheckEts, Expire),
+    io:fwrite("[SET] check ~p", [self()]),
+    ExpireCond = [{{'$1',{'_','$2','$3'}},
+        [{'=<',{'+','$2','$3'},{const,CurrentTime}}],
+        ['$1']}],
+    ExpiredKeys = ets:select(CheckEts, ExpireCond),
     lists:foreach(fun(K) ->
         ets:delete(CheckEts, K)
     end, ExpiredKeys),
@@ -122,6 +104,7 @@ handle_info(_Msg, State) ->
     {noreply, State}.
 
 terminate(_Reason, #checkstate{checkets = CheckEts}) ->
+    io:fwrite("check terminates", []),
     ets:delete(CheckEts),
     ok.
 
